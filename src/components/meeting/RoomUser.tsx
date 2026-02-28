@@ -4,6 +4,7 @@ type MeetingRoomUserProps = {
 }
 
 export const MeetingRoomUser = (props: MeetingRoomUserProps) => {
+  console.log('获取用户信息中...', props.userId)
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-8 text-center">
