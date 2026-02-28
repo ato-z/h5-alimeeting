@@ -1,6 +1,54 @@
 @import 'tailwindcss';
 
-/* 自定义动画 */
 @theme {
-  --animate-spin-slow: spin 3s linear infinite;
+  /* 品牌色系统 */
+  --color-brand: #2cbc50;
+  --color-brand-light: #e3fcea;
+  --color-brand-dark: #1f6630;
+
+  /* 相邻色 - 橙色 */
+  --color-orange: #eda547;
+  --color-orange-light: #fcf2e3;
+  --color-orange-dark: #66471f;
+  --color-orange-400: #fb923c;
+
+  /* 相邻色 - 紫色 */
+  --color-purple: #8d47ed;
+  --color-purple-light: #eee3fc;
+  --color-purple-dark: #3c1f66;
+
+  /* 相邻色 - 蓝色 */
+  --color-blue: #4792ed;
+  --color-blue-light: #e3effc;
+  --color-blue-dark: #1f3f66;
+
+  /* 对比色 - 红色 */
+  --color-red: #ed4751;
+  --color-red-light: #fce3e5;
+  --color-red-dark: #661f23;
+
+  /* 中性色梯度系统 (从深到浅) */
+  --color-gray-900: #191a19;
+  --color-gray-800: #2c2c2c;
+  --color-gray-700: #3f3f3f;
+  --color-gray-600: #666;
+  --color-gray-500: #6b6b6b;
+  --color-gray-400: #838383;
+  --color-gray-300: #999;
+  --color-gray-200: #bababa;
+  --color-gray-100: #dbdbdb;
+  --color-gray-50: #f1f1f1;
+
+  /* 基础中性色 */
+  --color-neutral-black: #1a1a1a;
+  --color-neutral-dark-gray: #666666;
+  --color-neutral-light-gray: #999999;
+  --color-neutral-base-dark: #161a17;
+
+  /* 其他辅助中性色 */
+  --color-support-gray-1: #333333;
+  --color-support-gray-2: #444444;
+  --color-support-gray-3: #dddddd;
+  --color-support-dark-bg: #292d33;
+  --color-support-light-bg: #f4f6f8;
 }
