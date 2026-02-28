@@ -1,0 +1,42 @@
+name: Build and Deploy to FTP (Yarn)
+
+on:
+  push:
+    branches:
+      - main # 监听 main 分支的提交
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 拉取代码
+      - name: 🚚 Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. 设置 Node.js 环境并开启 Yarn 缓存
+      - name: ⚙️ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn' # 自动缓存 node_modules，加速后续构建
+
+      # 3. 安装依赖 (使用 --frozen-lockfile 确保版本与本地 yarn.lock 完全一致)
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # 4. 执行构建
+      - name: 🏗️ Build Project
+        run: yarn build
+
+      # 5. 通过 FTP 上传 dist 目录
+      - name: 🚀 Sync Files via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Vite 默认构建输出目录是 dist
+          local-dir: ./dist/
+          # 如果需要上传到服务器的特定文件夹，请取消下行注释并修改
+          # server-dir: /public_html/
