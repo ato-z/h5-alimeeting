@@ -1,5 +1,5 @@
+import { getCurrentLocalDate } from '@/utils'
 import { request } from '@/utils/request'
-import instance from '@/utils/request'
 
 /**
  * 获取会议详情
@@ -11,6 +11,11 @@ export function getMeetingDetail(id: number | string) {
     url: '/meetingDetail',
     method: 'GET',
     params: { id },
+  }).then((data) => {
+    if (data) {
+      data.confirm_time = getCurrentLocalDate()
+    }
+    return data
   })
 }
 
@@ -32,8 +37,8 @@ export function getAliMeetingToken(userId: number | string) {
  * @returns 时间对象
  */
 export async function getServerTime(): Promise<ServerTimeResponse> {
-  const response = await instance.head('/')
-  const dateStr = response.headers?.['date']
+  const response = await fetch(window.location.origin, { method: 'HEAD' })
+  const dateStr = response.headers.get('date')
 
   if (!dateStr) {
     throw new Error('Server did not return Date header')
