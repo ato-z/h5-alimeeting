@@ -1,4 +1,5 @@
 import { request } from '@/utils/request'
+import instance from '@/utils/request'
 
 /**
  * 获取会议详情
@@ -24,4 +25,24 @@ export function getAliMeetingToken(userId: number | string) {
     method: 'GET',
     params: { userId },
   })
+}
+
+/**
+ * 获取服务器时间
+ * @returns 时间对象
+ */
+export async function getServerTime(): Promise<ServerTimeResponse> {
+  const response = await instance.head('/')
+  const dateStr = response.headers?.['date']
+
+  if (!dateStr) {
+    throw new Error('Server did not return Date header')
+  }
+
+  const date = new Date(dateStr)
+  return {
+    iso: date.toISOString(),
+    timestamp: date.getTime(),
+    date,
+  }
 }
