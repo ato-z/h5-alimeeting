@@ -1,9 +1,11 @@
 name: Build and Deploy to FTP (Yarn)
 
+# 触发条件
 on:
   push:
     branches:
-      - main # 监听 main 分支的提交
+      - main # 当代码推送到 main 分支时自动触发
+  workflow_dispatch: # 允许在 GitHub 页面上点击按钮手动触发
 
 jobs:
   build-and-deploy:
@@ -19,24 +21,29 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn' # 自动缓存 node_modules，加速后续构建
+          cache: 'yarn' # 开启缓存，缩短后续构建时间
 
-      # 3. 安装依赖 (使用 --frozen-lockfile 确保版本与本地 yarn.lock 完全一致)
+      # 3. 安装依赖
+      # 使用 --frozen-lockfile 确保安装版本与你的 yarn.lock 一致
       - name: 📦 Install dependencies
         run: yarn install --frozen-lockfile
 
-      # 4. 执行构建
+      # 4. 执行项目构建
+      # 对应 package.json 中的 "build": "tsc -b && vite build"
       - name: 🏗️ Build Project
         run: yarn build
 
-      # 5. 通过 FTP 上传 dist 目录
+      # 5. 通过 FTP 上传构建后的静态文件
       - name: 🚀 Sync Files via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Vite 默认构建输出目录是 dist
+          # Vite 默认生成的文件夹是 dist
           local-dir: ./dist/
-          # 如果需要上传到服务器的特定文件夹，请取消下行注释并修改
-          # server-dir: /public_html/
+          # 如果需要上传到服务器的特定目录（如 /www/wwwroot/site），请取消下行注释
+          # server-dir: ./
+
+          # 建议设置，防止因网络抖动导致的上传失败
+          timeout: 60000
