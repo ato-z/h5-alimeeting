@@ -141,6 +141,19 @@
     "@babel/helper-string-parser" "^7.27.1"
     "@babel/helper-validator-identifier" "^7.28.5"
 
+"@dingrtc/channel@1.1.17":
+  version "1.1.17"
+  resolved "https://registry.yarnpkg.com/@dingrtc/channel/-/channel-1.1.17.tgz#922f399d94521a76c7fe79c13861e739c8387d32"
+  integrity sha512-aLlSSwjd/PpQyX/loCoXWmTXwgLKfXYiQGz7zVhzxXKAFYGz8s7ZTe/1L111O7c2hXIsT0UjYGuBfjgNhUgI0g==
+  dependencies:
+    "@dingrtc/shared" "1.1.9"
+    long "^5.2.3"
+
+"@dingrtc/shared@1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@dingrtc/shared/-/shared-1.1.9.tgz#dbc9d9fe3e0c91f6d40b3ef2eb5b954001d48afd"
+  integrity sha512-BlkkUOIQoYMAO6cTgZp1Kcy76qGixHFsqkQ4SH3PYIWNmca0RJIEK5xQZg65ceWeppKgth+B+hc00Qu0tKzjhA==
+
 "@emnapi/core@^1.7.1", "@emnapi/core@^1.8.1":
   version "1.8.1"
   resolved "https://registry.npmmirror.com/@emnapi/core/-/core-1.8.1.tgz#fd9efe721a616288345ffee17a1f26ac5dd01349"
@@ -998,6 +1011,16 @@ detect-libc@^2.0.3:
   resolved "https://registry.npmmirror.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
   integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
 
+dingrtc@^3.9.28:
+  version "3.9.28"
+  resolved "https://registry.yarnpkg.com/dingrtc/-/dingrtc-3.9.28.tgz#aa844078efeb485a0aec66f91d113037cc06ceed"
+  integrity sha512-Rfoob6BF+jf0Hbglb/DBp+Qh4v8EVE5GNi6OPbmN09Z+/OIaTd+lbWQ6Ey/lP+HpqkOAg4l+uE+7JLUCYmJIMw==
+  dependencies:
+    "@dingrtc/channel" "1.1.17"
+    "@dingrtc/shared" "1.1.9"
+    sdp-transform "^2.14.2"
+    webrtc-adapter "^8.2.3"
+
 dunder-proto@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/dunder-proto/-/dunder-proto-1.0.1.tgz#d7ae667e1dc83482f8b70fd0f6eefc50da30f58a"
@@ -1513,6 +1536,11 @@ locate-path@^6.0.0:
   dependencies:
     p-locate "^5.0.0"
 
+long@^5.2.3:
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/long/-/long-5.3.2.tgz#1d84463095999262d7d7b7f8bfd4a8cc55167f83"
+  integrity sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==
+
 lru-cache@^5.1.1:
   version "5.1.1"
   resolved "https://registry.npmmirror.com/lru-cache/-/lru-cache-5.1.1.tgz#1da27e6710271947695daf6848e847f01d84b920"
@@ -1697,6 +1725,16 @@ scheduler@^0.27.0:
   resolved "https://registry.npmmirror.com/scheduler/-/scheduler-0.27.0.tgz#0c4ef82d67d1e5c1e359e8fc76d3a87f045fe5bd"
   integrity sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==
 
+sdp-transform@^2.14.2:
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/sdp-transform/-/sdp-transform-2.15.0.tgz#79d37a2481916f36a0534e07b32ceaa87f71df42"
+  integrity sha512-KrOH82c/W+GYQ0LHqtr3caRpM3ITglq3ljGUIb8LTki7ByacJZ9z+piSGiwZDsRyhQbYBOBJgr2k6X4BZXi3Kw==
+
+sdp@^3.2.0:
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/sdp/-/sdp-3.2.1.tgz#a2f79eecd7c5adb90d54e1bc9812775d80f3c06c"
+  integrity sha512-lwsAIzOPlH8/7IIjjz3K0zYBk7aBVVcvjMwt3M4fLxpjMYyy7i3I97SLHebgn4YBjirkzfp3RvRDWSKsh/+WFw==
+
 semver@^6.3.1:
   version "6.3.1"
   resolved "https://registry.npmmirror.com/semver/-/semver-6.3.1.tgz#556d2ef8689146e46dcea4bfdd095f3434dffcb4"
@@ -1807,6 +1845,13 @@ vite@^7.3.1:
     tinyglobby "^0.2.15"
   optionalDependencies:
     fsevents "~2.3.3"
+
+webrtc-adapter@^8.2.3:
+  version "8.2.4"
+  resolved "https://registry.yarnpkg.com/webrtc-adapter/-/webrtc-adapter-8.2.4.tgz#09c912c303de0741ec5137d6903f95742ef4609a"
+  integrity sha512-VwtwbYNKnVQW8koB9qb8YcxNwpSVHTvvKEZLzY6uQ3gFrA9E87VPbB5xE+m1AGwUjL1UgN35jRR9hQgteZI5bg==
+  dependencies:
+    sdp "^3.2.0"
 
 which@^2.0.1:
   version "2.0.2"

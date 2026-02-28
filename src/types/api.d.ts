@@ -60,6 +60,7 @@ declare interface AliMeetingTokenResponse {
   user_id: string
 }
 
+/** 会议状态 */
 declare type MeetingState = 'attend' | 'preparation' | 'ongoing' | 'ended'
 
 /**
@@ -67,9 +68,12 @@ declare type MeetingState = 'attend' | 'preparation' | 'ongoing' | 'ended'
  */
 declare interface ServerTimeResponse {
   /** ISO 格式的时间字符串 */
-  iso: string;
+  iso: string
   /** 时间戳（毫秒） */
-  timestamp: number;
+  timestamp: number
   /** 日期对象 */
-  date: Date;
+  date: Date
 }
+
+// -1刚进入 0不合法 1合法
+declare type UserDrawUpState = -1 | 0 | 1
