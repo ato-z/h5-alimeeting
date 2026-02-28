@@ -1,49 +1,53 @@
-name: Build and Deploy to FTP (Yarn)
+name: Build and Deploy to FTP
 
-# 触发条件
 on:
   push:
     branches:
-      - main # 当代码推送到 main 分支时自动触发
-  workflow_dispatch: # 允许在 GitHub 页面上点击按钮手动触发
+      - main
+  workflow_dispatch: # 依然保留手动触发按钮
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    # 这里将整个流水线拆分成了 7 个清晰的阶段（Steps）
     steps:
-      # 1. 拉取代码
-      - name: 🚚 Checkout Code
+      # 阶段 1：准备环境 - 拉取代码
+      - name: 📥 Stage 1 - Checkout Code
         uses: actions/checkout@v4
 
-      # 2. 设置 Node.js 环境并开启 Yarn 缓存
-      - name: ⚙️ Setup Node
+      # 阶段 2：准备环境 - 配置 Node 和 Yarn 缓存
+      - name: ⚙️ Stage 2 - Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn' # 开启缓存，缩短后续构建时间
+          cache: 'yarn'
 
-      # 3. 安装依赖
-      # 使用 --frozen-lockfile 确保安装版本与你的 yarn.lock 一致
-      - name: 📦 Install dependencies
+      # 阶段 3：安装依赖
+      - name: 📦 Stage 3 - Install Dependencies
         run: yarn install --frozen-lockfile
 
-      # 4. 执行项目构建
-      # 对应 package.json 中的 "build": "tsc -b && vite build"
-      - name: 🏗️ Build Project
+      # 阶段 4：执行打包构建
+      - name: 🏗️ Stage 4 - Build Project
         run: yarn build
 
-      # 5. 通过 FTP 上传构建后的静态文件
-      - name: 🚀 Sync Files via FTP
+      # 阶段 5：修改文件（重命名 index.html 为 meeting.html）
+      - name: 📝 Stage 5 - Rename Entry File
+        run: |
+          echo "Renaming index.html to meeting.html..."
+          mv dist/index.html dist/meeting.html
+          echo "Checking dist folder contents:"
+          ls -la dist/
+
+      # 阶段 6：通过 FTP 传输文件到服务器
+      - name: 🚀 Stage 6 - Transfer via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          # Vite 默认生成的文件夹是 dist
           local-dir: ./dist/
-          # 如果需要上传到服务器的特定目录（如 /www/wwwroot/site），请取消下行注释
-          # server-dir: ./
 
-          # 建议设置，防止因网络抖动导致的上传失败
-          timeout: 60000
+      # 阶段 7：部署完成通知（可选，帮你确认部署成功）
+      - name: 🎉 Stage 7 - Deployment Complete
+        run: echo "部署成功！ meeting.html 已上传至服务器。"
