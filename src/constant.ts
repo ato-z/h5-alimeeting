@@ -1,5 +1,5 @@
 // 阿里云音视频id
-export const APPID = 'LTAI5tHrSGThdaCe1B9QNW39'
+export const APPID = '8uk6gptu'
 
 // 用户进入状态
 export const USER_DRAW_UP_STATE = {

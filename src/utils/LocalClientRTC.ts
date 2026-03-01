@@ -84,12 +84,12 @@ export class LocalClientRTC {
 
   private async withByOnline() {
     const { uid } = this
-    const { token, channel_id } = await getAliMeetingToken(uid)
+    const { token, channel_id, user_id } = await getAliMeetingToken(uid)
 
     return this.client.join({
       appId: APPID,
       token: token,
-      uid: uid,
+      uid: user_id,
       channel: channel_id,
       userName: `user: ${uid}`,
     })
