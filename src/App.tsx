@@ -9,8 +9,9 @@ import { getServerTime } from '@/api/meeting'
 function App() {
   const [state, setState] = useState<MeetingState>('attend')
   const [meeting, setMeeting] = useState<MeetingDetailResponse | null>(null)
-  const [meetingId] = useState<string>('12')
-  const [userId] = useState<string>('1')
+  const params = new URLSearchParams(window.location.search)
+  const [meetingId] = useState<string>(params.get('meetingId') ?? '12')
+  const [userId] = useState<string>(params.get('memberId') ?? '1')
 
   const determineMeetingState = useCallback(async (meeting: MeetingDetailResponse) => {
     try {

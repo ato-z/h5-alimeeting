@@ -19,6 +19,7 @@ export class LocalClientRTC {
     const { client } = this
 
     client.on('user-published', (user, mediaType, auxiliary) => {
+      console.log('有用户加入', client.remoteUsers)
       if (mediaType === 'video') {
         client.subscribe(user.userId, mediaType, auxiliary).then((track) => {
           const playFn = Reflect.get(track, 'play').bind(track)
@@ -79,7 +80,7 @@ export class LocalClientRTC {
     this.client = client
 
     this.start()
-    this.joinPromise = this.withByOnline().then(() => this.touchJoinRemove())
+    this.joinPromise = this.withByOnline().then((res) => this.touchJoinRemove().then(() => res))
   }
 
   private async withByOnline() {
