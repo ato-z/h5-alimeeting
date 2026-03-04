@@ -22,13 +22,14 @@ export function getMeetingDetail(id: number | string) {
 /**
  * 获取阿里云会议 Token
  * @param userId 用户ID
+ * @param roomId 房间ID
  * @returns 阿里云会议 Token 数据
  */
-export function getAliMeetingToken(userId: number | string) {
+export function getAliMeetingToken(userId: number | string, roomId: number | string) {
   return request<AliMeetingTokenResponse>({
     url: '/audio/getAudioToken',
     method: 'GET',
-    params: { userId },
+    params: { userId, roomId },
   })
 }
 

@@ -14,8 +14,8 @@ type MeetingRoomProps = {
   userId: string
 }
 
-export const MeetingRoom = ({ userId }: MeetingRoomProps) => {
-  const localClientRTC = LocalClientRTC.getInstance(userId)
+export const MeetingRoom = ({ userId, meetingId }: MeetingRoomProps) => {
+  const localClientRTC = LocalClientRTC.getInstance(userId, meetingId)
   const [userDrawUp, setUserDrawUp] = useState<(typeof USER_DRAW_UP_STATE)[keyof typeof USER_DRAW_UP_STATE]>(
     USER_DRAW_UP_STATE.ENTER
   )

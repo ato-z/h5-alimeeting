@@ -6,11 +6,12 @@ import { getAliMeetingToken } from '@/api/meeting'
 const instanceMap = new Map<string, LocalClientRTC>()
 
 export class LocalClientRTC {
-  static getInstance(uid: string) {
-    if (instanceMap.has(uid)) return instanceMap.get(uid)!
+  static getInstance(uid: string, roomId: string) {
+    const key = `${uid}_${roomId}`
+    if (instanceMap.has(key)) return instanceMap.get(key)!
 
-    const instance = new LocalClientRTC(uid)
-    instanceMap.set(uid, instance)
+    const instance = new LocalClientRTC(uid, roomId)
+    instanceMap.set(key, instance)
     return instance
   }
   static instance: LocalClientRTC
@@ -75,7 +76,10 @@ export class LocalClientRTC {
     }
   }
 
-  private constructor(public readonly uid: string) {
+  private constructor(
+    public readonly uid: string,
+    public readonly roomId: string
+  ) {
     const client = DingRTC.createClient()
     this.client = client
 
@@ -84,8 +88,8 @@ export class LocalClientRTC {
   }
 
   private async withByOnline() {
-    const { uid } = this
-    const { token, channel_id, user_id } = await getAliMeetingToken(uid)
+    const { uid, roomId } = this
+    const { token, channel_id, user_id } = await getAliMeetingToken(uid, roomId)
 
     return this.client.join({
       appId: APPID,
