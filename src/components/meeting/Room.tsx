@@ -6,6 +6,7 @@ import { USER_DRAW_UP_STATE } from '@/constant'
 import { MeetingGrid } from './Grid'
 import { useLocalTrack } from '@/hook/useLocalTrack'
 import { MeetingToolbar } from './Toolbar'
+import { waitBeFindNode } from '@/utils'
 
 type MeetingRoomProps = {
   /** 会议ID */
@@ -28,14 +29,24 @@ export const MeetingRoom = ({ userId, meetingId }: MeetingRoomProps) => {
 
   localClientRTC.onRemoteUserJoin = ({ id }, play) => {
     const newUsers = new Set(roomUsers)
-    console.log('newUser', newUsers, roomUsers)
+
+    // 如果存在则不加入
+    if (newUsers.has(id) || id === 'mcu') return void 0
+
     newUsers.add(id)
     setRoomUser([...newUsers])
 
-    requestAnimationFrame(() => {
-      console.log('插入节点', document.querySelector(`#${id}`), play)
-      play(`#${id}`)
+    const selector = `#${id}`
+    waitBeFindNode(selector, () => {
+      console.log('插入到节点中', selector, play)
+      play(selector)
     })
+  }
+
+  localClientRTC.onRemoveUserLeave = ({ id }) => {
+    const newUsers = new Set(roomUsers)
+    newUsers.delete(id)
+    setRoomUser([...newUsers])
   }
 
   useEffect(() => {
@@ -53,7 +64,7 @@ export const MeetingRoom = ({ userId, meetingId }: MeetingRoomProps) => {
   useEffect(() => {
     if (localCameraTrack) localCameraTrack.play('#self')
     return () => {
-      localClientRTC.client.leave()
+      localClientRTC.leave()
     }
   }, [localCameraTrack, localClientRTC])
 

@@ -61,7 +61,7 @@ declare interface AliMeetingTokenResponse {
 }
 
 /** 会议状态 */
-declare type MeetingState = 'attend' | 'preparation' | 'ongoing' | 'ended'
+declare type MeetingState = 'attend' | 'preparation' | 'notTouch' | 'ongoing' | 'ended'
 
 /**
  * 服务器时间响应类型

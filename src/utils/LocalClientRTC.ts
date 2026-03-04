@@ -7,11 +7,11 @@ const instanceMap = new Map<string, LocalClientRTC>()
 
 export class LocalClientRTC {
   static getInstance(uid: string, roomId: string) {
-    const key = `${uid}_${roomId}`
-    if (instanceMap.has(key)) return instanceMap.get(key)!
+    if (instanceMap.has(uid)) return instanceMap.get(uid)!
 
+    console.log('重启多次?')
     const instance = new LocalClientRTC(uid, roomId)
-    instanceMap.set(key, instance)
+    instanceMap.set(uid, instance)
     return instance
   }
   static instance: LocalClientRTC
@@ -20,12 +20,13 @@ export class LocalClientRTC {
     const { client } = this
 
     client.on('user-published', (user, mediaType, auxiliary) => {
-      console.log('有用户加入', client.remoteUsers)
+      console.log('远程用户加入', client.remoteUsers)
       if (mediaType === 'video') {
+        console.log('远程uid', user.userId)
         client.subscribe(user.userId, mediaType, auxiliary).then((track) => {
           const playFn = Reflect.get(track, 'play').bind(track)
           if (this.onRemoteUserJoin) {
-            this.onRemoteUserJoin(user, playFn)
+            this.onRemoteUserJoin({ id: user.userId }, playFn)
           }
         })
       } else if (!this.mcuSubscribed) {
@@ -33,9 +34,15 @@ export class LocalClientRTC {
         client.subscribe('mcu', 'audio').then((track) => {
           const playFn = Reflect.get(track, 'play')
           if (typeof playFn === 'function') {
-            playFn.apply(track, [])
+            // playFn.apply(track, [])
           }
         })
+      }
+    })
+
+    client.on('user-unpublished', (user) => {
+      if (this.onRemoveUserLeave) {
+        this.onRemoveUserLeave({ id: user.userId })
       }
     })
   }
@@ -76,6 +83,19 @@ export class LocalClientRTC {
     }
   }
 
+  leave() {
+    console.log('用户退出房间')
+    /* if (this.client) {
+      try {
+        this.client.leave()
+      } catch {
+        console.log('退出房间失败')
+      }
+    }
+
+    instanceMap.delete(this.uid)*/
+  }
+
   private constructor(
     public readonly uid: string,
     public readonly roomId: string
@@ -84,18 +104,22 @@ export class LocalClientRTC {
     this.client = client
 
     this.start()
-    this.joinPromise = this.withByOnline().then((res) => this.touchJoinRemove().then(() => res))
+    this.joinPromise = this.withByOnline().then(async (res) => {
+      await this.touchJoinRemove()
+      return res
+    })
   }
 
   private async withByOnline() {
     const { uid, roomId } = this
     const { token, channel_id, user_id } = await getAliMeetingToken(uid, roomId)
 
+    console.log(token, channel_id, user_id)
     return this.client.join({
       appId: APPID,
       token: token,
       uid: user_id,
-      channel: channel_id,
+      channel: channel_id.toString(),
       userName: `user: ${uid}`,
     })
   }
@@ -107,4 +131,6 @@ export class LocalClientRTC {
     user: DingRTCClient['remoteUsers'][number] | { id: string },
     play: (id: string) => void
   ) => void
+
+  public onRemoveUserLeave?: (user: DingRTCClient['remoteUsers'][number] | { id: string }) => void
 }

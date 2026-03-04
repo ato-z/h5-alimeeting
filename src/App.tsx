@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { MeetingAttend } from '@/components/meeting/Attend'
 import { MeetingPreparation } from '@/components/meeting/Preparation'
 import { MeetingRoom } from '@/components/meeting/Room'
@@ -9,11 +9,12 @@ import { getServerTime } from '@/api/meeting'
 function App() {
   const [state, setState] = useState<MeetingState>('attend')
   const [meeting, setMeeting] = useState<MeetingDetailResponse | null>(null)
+  const [hasInteracted, setHasInteracted] = useState(false)
   const params = new URLSearchParams(window.location.search)
   const [meetingId] = useState<string>(params.get('meetingId') ?? '12')
   const [userId] = useState<string>(params.get('memberId') ?? '1')
 
-  const determineMeetingState = useCallback(async (meeting: MeetingDetailResponse) => {
+  const determineMeetingState = useCallback(async (meeting: MeetingDetailResponse, hasInteracted: boolean) => {
     try {
       const serverTime = await getServerTime()
       const currentTime = serverTime.timestamp
@@ -30,8 +31,9 @@ function App() {
       // 比较确认时间和当前时间
       // 如果确认时间小于当前时间，会议已到，进入进行中阶段
       // 如果确认时间大于当前时间，会议还未到，进入准备阶段
+      // 只有当用户有触摸或点击过网页时才进入 ongoing 状态
       if (confirmTime <= currentTime) {
-        setState('ongoing')
+        setState(hasInteracted ? 'ongoing' : 'notTouch')
       } else {
         setState('preparation')
       }
@@ -42,6 +44,24 @@ function App() {
     }
   }, [])
 
+  // 监听用户触摸或点击事件，当交互发生时重新判断会议状态
+  useEffect(() => {
+    const handleInteraction = () => {
+      setHasInteracted(true)
+      if (meeting) {
+        determineMeetingState(meeting, true)
+      }
+    }
+
+    const events = ['touchstart', 'touchend', 'click']
+    events.forEach((event) => document.addEventListener(event, handleInteraction))
+    return () => {
+      events.forEach((event) => {
+        document.removeEventListener(event, handleInteraction)
+      })
+    }
+  }, [meeting, state, determineMeetingState])
+
   // 如果会议详情数据不存在，则进入获取会议详情阶段
   if (meeting === null) {
     return <MeetingAttend meeting={meeting} setMeeting={setMeeting} mettingId={meetingId} />
@@ -49,7 +69,7 @@ function App() {
 
   // 如果会议详情数据存在但会议未开始，则进入会议预备阶段
   if (meeting && state === 'attend') {
-    determineMeetingState(meeting)
+    determineMeetingState(meeting, hasInteracted)
   }
 
   // 如果不存在确认时间并且 确认时间小小于当前时间，则进入会议预备阶段

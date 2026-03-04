@@ -28,20 +28,20 @@ export const useLocalTrack = ({ client, joinPromise }: LocalTrackProp) => {
   const touchMicTrack = async () => {
     await joinPromise
     const track = await DingRTC.createMicrophoneAudioTrack()
+    await client.publish([track])
     setMicTrack(track)
-    client.publish([track])
   }
 
-  const closeCameraTrack = () => {
+  const closeCameraTrack = async () => {
     if (cameraTrack) {
-      client.unpublish([cameraTrack])
+      await client.unpublish([cameraTrack])
     }
     setCameraTrack(undefined)
   }
 
-  const closeMicTrack = () => {
+  const closeMicTrack = async () => {
     if (micTrack) {
-      client.unpublish([micTrack])
+      await client.unpublish([micTrack])
     }
 
     setMicTrack(undefined)
