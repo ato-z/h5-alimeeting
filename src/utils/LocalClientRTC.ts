@@ -83,12 +83,6 @@ export class LocalClientRTC {
     })
 
     // 处理远程用户退出
-    // client.on('user-unpublished', (user) => {
-    //   if (this.onRemoveUserLeave) {
-    //     this.onRemoveUserLeave({ id: user.userId })
-    //   }
-    // })
-
     client.on('user-left', (user) => {
       if (this.onRemoveUserLeave) {
         this.onRemoveUserLeave({ id: user.userId })

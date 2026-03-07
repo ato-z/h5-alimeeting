@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import type { CameraVideoTrack, MicrophoneAudioTrack } from 'dingrtc'
 import { LocalClientRTC } from '@/utils/LocalClientRTC'
 import { USER_DRAW_UP_STATE } from '@/constant'
@@ -36,6 +36,35 @@ export const useMeeting = ({ userId, meetingId, onRemoteUserJoin, onRemoteUserLe
     onRemoteUserLeave?.(id)
   }
 
+  // 播放本地视频
+  if (cameraTrack) {
+    cameraTrack.play('#self')
+  }
+
+  const touchCameraTrack = useCallback(async () => {
+    await controller.joinPromise
+    await controller.publishLocalVideo()
+    setCameraTrack(controller.localVideoTrack)
+  }, [controller, setCameraTrack])
+
+  const touchMicTrack = useCallback(async () => {
+    await controller.joinPromise
+    await controller.publishLocalAudio()
+    setMicTrack(controller.localAudioTrack)
+  }, [controller, setMicTrack])
+
+  const closeCameraTrack = useCallback(async () => {
+    await controller.joinPromise
+    await controller.unPublishLocalVideo()
+    setCameraTrack(controller.localVideoTrack)
+  }, [controller, setCameraTrack])
+
+  const closeMicTrack = useCallback(async () => {
+    await controller.joinPromise
+    await controller.unPublishLocalAudio()
+    setMicTrack(controller.localAudioTrack)
+  }, [controller, setMicTrack])
+
   // 自动加入房间
   useEffect(() => {
     // 防止 React 严格模式重复执行
@@ -44,8 +73,11 @@ export const useMeeting = ({ userId, meetingId, onRemoteUserJoin, onRemoteUserLe
 
     controller
       .join()
-      .then(() => {
+      .then(async () => {
         setJoinState(USER_DRAW_UP_STATE.COME)
+
+        await touchCameraTrack()
+        await touchMicTrack()
       })
       .catch((err) => {
         if (err === null) return void 0
@@ -62,36 +94,7 @@ export const useMeeting = ({ userId, meetingId, onRemoteUserJoin, onRemoteUserLe
       }
       controller.leave()
     }
-  }, [controller])
-
-  // 播放本地视频
-  if (cameraTrack) {
-    cameraTrack.play('#self')
-  }
-
-  const touchCameraTrack = async () => {
-    await controller.joinPromise
-    await controller.publishLocalVideo()
-    setCameraTrack(controller.localVideoTrack)
-  }
-
-  const touchMicTrack = async () => {
-    await controller.joinPromise
-    await controller.publishLocalAudio()
-    setMicTrack(controller.localAudioTrack)
-  }
-
-  const closeCameraTrack = async () => {
-    await controller.joinPromise
-    await controller.unPublishLocalVideo()
-    setCameraTrack(controller.localVideoTrack)
-  }
-
-  const closeMicTrack = async () => {
-    await controller.joinPromise
-    await controller.unPublishLocalAudio()
-    setMicTrack(controller.localAudioTrack)
-  }
+  }, [controller, touchCameraTrack, touchMicTrack])
 
   return {
     controller,
