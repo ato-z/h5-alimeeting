@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { MeetingRoomUser } from './RoomUser'
 import { LocalClientRTC } from '@/utils/LocalClientRTC'
 import { MeetingError } from './MeetingError'
@@ -23,6 +23,8 @@ export const MeetingRoom = ({ userId, meetingId }: MeetingRoomProps) => {
   const [roomUsers, setRoomUser] = useState(['self'])
   const [error, setError] = useState<Error | string | null>(null)
   const [localCameraTrack, localMicTrack, localTrackAction] = useLocalTrack({ controller: localClientRTC })
+  const hasJoinedRef = useRef(false)
+  const isFirstMountRef = useRef(true)
 
   localClientRTC.onRemoteUserJoin = ({ id }, play) => {
     const newUsers = new Set(roomUsers)
@@ -46,24 +48,38 @@ export const MeetingRoom = ({ userId, meetingId }: MeetingRoomProps) => {
     setRoomUser([...newUsers])
   }
 
+  // 等待轨道加入之后播放
   useEffect(() => {
-    localClientRTC.joinPromise
+    // 防止 React 严格模式重复执行
+    if (hasJoinedRef.current) return void 0
+    hasJoinedRef.current = true
+
+    localClientRTC
+      .join()
       .then(() => {
         setUserDrawUp(USER_DRAW_UP_STATE.COME)
       })
       .catch((err) => {
+        if (err === null) return void 0
         setUserDrawUp(USER_DRAW_UP_STATE.FAIL)
         setError(err)
       })
-  }, [localClientRTC, localTrackAction])
 
-  // 等待轨道加入之后播放
-  useEffect(() => {
-    if (localCameraTrack) localCameraTrack.play('#self')
     return () => {
+      // React 严格模式在开发环境下会立即调用 cleanup
+      // 跳过第一次的 cleanup，避免破坏 SDK 状态
+      if (isFirstMountRef.current) {
+        isFirstMountRef.current = false
+        console.log('跳过 React 严格模式的第一次 cleanup')
+        return
+      }
       localClientRTC.leave()
     }
-  }, [localCameraTrack, localClientRTC])
+  }, [localClientRTC])
+
+  if (localCameraTrack) {
+    localCameraTrack.play('#self')
+  }
 
   if (userDrawUp === USER_DRAW_UP_STATE.ENTER) return <MeetingRoomUser />
   if (error) return <MeetingError error={error} />
