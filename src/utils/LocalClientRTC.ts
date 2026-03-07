@@ -37,7 +37,9 @@ export class LocalClientRTC {
     return certificate
   }
 
-  // start 远程轨道加入处理
+  // =================
+  // start 远程轨道事件处理
+  // =================
   /**
    * 处理远程视频
    */
@@ -60,7 +62,9 @@ export class LocalClientRTC {
     }
   }
 
-  /**  */
+  /**
+   * 设置客户端事件监听器
+   */
   protected async setupClientEventListeners() {
     // 等待加入完毕
     await this.joinPromise
@@ -85,10 +89,13 @@ export class LocalClientRTC {
       }
     })
   }
-  // 远程轨道加入处理 end
+  // =================
+  // 远程订阅 end
+  // =================
 
-  // start 远程订阅
-  /** */
+  /**
+   * 获取订阅参数
+   */
   protected async touchSubParams() {
     // 订阅参数
     const subParams: Array<{ uid: string; mediaType: 'audio' | 'video'; auxiliary: boolean }> = [
@@ -125,9 +132,10 @@ export class LocalClientRTC {
       else if (track.trackMediaType === 'video') this.handleWithVideoTrack(uid, track)
     }
   }
-  // 远程订阅加入处理 end
 
-  /** */
+  /**
+   * 离开房间
+   */
   leave() {
     console.log('用户退出房间')
   }
@@ -150,7 +158,11 @@ export class LocalClientRTC {
     return this.localAudioTrack
   }
 
-  /** */
+  /**
+   * 构造函数
+   * @param uid 用户ID
+   * @param roomId 房间ID
+   */
   private constructor(
     public readonly uid: string,
     public readonly roomId: string
