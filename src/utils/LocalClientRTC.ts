@@ -158,6 +158,30 @@ export class LocalClientRTC {
     return this.localAudioTrack
   }
 
+  /** 添加本地视频监听 */
+  async publishLocalVideo() {
+    const track = await this.createCameraVideoTrack()
+    await this.client.publish([track])
+  }
+
+  /** 取消本地视监听 */
+  async unPublishLocalVideo() {
+    await this.client.unpublish(this.localVideoTrack)
+    this.localAudioTrack = undefined
+  }
+
+  /** 添加本地音频监听 */
+  async publishLocalAudio() {
+    const track = await this.createMicrophoneAudioTrack()
+    await this.client.publish([track])
+  }
+
+  /** 取消本地音频监听 */
+  async unPublishLocalAudio() {
+    await this.client.unpublish(this.localAudioTrack)
+    this.localAudioTrack = undefined
+  }
+
   /**
    * 构造函数
    * @param uid 用户ID

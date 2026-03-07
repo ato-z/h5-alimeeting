@@ -22,10 +22,7 @@ export const MeetingRoom = ({ userId, meetingId }: MeetingRoomProps) => {
   )
   const [roomUsers, setRoomUser] = useState(['self'])
   const [error, setError] = useState<Error | string | null>(null)
-  const [localCameraTrack, localMicTrack, localTrackAction] = useLocalTrack({
-    client: localClientRTC.client,
-    joinPromise: localClientRTC.joinPromise,
-  })
+  const [localCameraTrack, localMicTrack, localTrackAction] = useLocalTrack({ controller: localClientRTC })
 
   localClientRTC.onRemoteUserJoin = ({ id }, play) => {
     const newUsers = new Set(roomUsers)

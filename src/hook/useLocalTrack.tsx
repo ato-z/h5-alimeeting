@@ -1,50 +1,40 @@
 import { useState } from 'react'
-import DingRTC from 'dingrtc'
-import type { CameraVideoTrack, DingRTCClient, MicrophoneAudioTrack } from 'dingrtc'
+import type { CameraVideoTrack, MicrophoneAudioTrack } from 'dingrtc'
+import type { LocalClientRTC } from '@/utils/LocalClientRTC'
 
 interface LocalTrackProp {
-  client: DingRTCClient
-  joinPromise: ReturnType<DingRTCClient['join']>
+  controller: LocalClientRTC
 }
 
 /**
  * 本地客户端音视频轨道
  */
-export const useLocalTrack = ({ client, joinPromise }: LocalTrackProp) => {
-  const [cameraTrack, setCameraTrack] = useState<CameraVideoTrack>()
-  const [micTrack, setMicTrack] = useState<MicrophoneAudioTrack>()
+export const useLocalTrack = ({ controller }: LocalTrackProp) => {
+  const [cameraTrack, setCameraTrack] = useState<CameraVideoTrack | undefined>(controller.localVideoTrack)
+  const [micTrack, setMicTrack] = useState<MicrophoneAudioTrack | undefined>(controller.localAudioTrack)
 
   const touchCameraTrack = async () => {
-    await joinPromise
-
-    const track = await DingRTC.createCameraVideoTrack({
-      frameRate: 15,
-      dimension: 'VD_1280x720',
-    })
-    setCameraTrack(track)
-    client.publish([track])
+    await controller.joinPromise
+    await controller.publishLocalVideo()
+    setCameraTrack(controller.localVideoTrack)
   }
 
   const touchMicTrack = async () => {
-    await joinPromise
-    const track = await DingRTC.createMicrophoneAudioTrack()
-    await client.publish([track])
-    setMicTrack(track)
+    await controller.joinPromise
+    await controller.publishLocalAudio()
+    setMicTrack(controller.localAudioTrack)
   }
 
   const closeCameraTrack = async () => {
-    if (cameraTrack) {
-      await client.unpublish([cameraTrack])
-    }
-    setCameraTrack(undefined)
+    await controller.joinPromise
+    await controller.unPublishLocalVideo()
+    setCameraTrack(controller.localVideoTrack)
   }
 
   const closeMicTrack = async () => {
-    if (micTrack) {
-      await client.unpublish([micTrack])
-    }
-
-    setMicTrack(undefined)
+    await controller.joinPromise
+    await controller.unPublishLocalAudio()
+    setMicTrack(controller.localAudioTrack)
   }
 
   return [cameraTrack, micTrack, { touchCameraTrack, touchMicTrack, closeCameraTrack, closeMicTrack }] as const
