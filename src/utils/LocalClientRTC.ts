@@ -83,11 +83,11 @@ export class LocalClientRTC {
     })
 
     // 处理远程用户退出
-    client.on('user-unpublished', (user) => {
-      if (this.onRemoveUserLeave) {
-        this.onRemoveUserLeave({ id: user.userId })
-      }
-    })
+    // client.on('user-unpublished', (user) => {
+    //   if (this.onRemoveUserLeave) {
+    //     this.onRemoveUserLeave({ id: user.userId })
+    //   }
+    // })
 
     client.on('user-left', (user) => {
       if (this.onRemoveUserLeave) {
@@ -142,7 +142,6 @@ export class LocalClientRTC {
 
   private async checkState() {
     if (this.leaveState) throw new Error('当前客户端已销毁')
-    console.log(this.joinPromise)
     await this.joinPromise
   }
 
