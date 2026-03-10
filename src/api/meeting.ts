@@ -11,11 +11,6 @@ export function getMeetingDetail(id: number | string) {
     url: '/meetingDetail',
     method: 'GET',
     params: { id },
-  }).then((data) => {
-    if (data) {
-      data.confirm_time = getCurrentLocalDate()
-    }
-    return data
   })
 }
 
